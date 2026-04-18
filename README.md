@@ -11,3 +11,6 @@ A collection of Python projects built during my embedded engineering journey.
 
 ## Week 2 - OOP
 - CLI Password Manager
+
+## Week 3 - SQL and PostgreSQL
+- Inventory Management System
