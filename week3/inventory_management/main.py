@@ -1,6 +1,7 @@
 import psycopg2
 
 def add_product():
+    """Adds a new product to the inventory"""
     product_name = input("Product Name: ")
     price = int(input("Price: "))
     qty = int(input("qty: "))
@@ -13,6 +14,7 @@ def add_product():
     print("Product added sucessfully")
 
 def view_products():
+    """Views all the product in the inventory"""
     exe_statement = """
     SELECT products.product_name, products.qty, products.price, categories.category_name
     FROM products
@@ -35,6 +37,7 @@ def view_products():
 
 
 def update_product():
+    """Updates an existing product in the inventory"""
     product_name = input("Enter the name of the product you want to update: ")
     product_name = f"%{product_name}%"
     price = int(input("Price: "))
@@ -50,6 +53,7 @@ def update_product():
     print("Product updated sucessfully")
 
 def delete_product():
+    """Deletes a product from the inventory"""
     product_name = input("Enter the name of the product you want to delete: ")
     product_name = f"%{product_name}%"
     exe_statement = """
@@ -62,6 +66,7 @@ def delete_product():
     print("Product deleted sucessfully")
 
 def search_product():
+    """Search for a particular product from the inventory"""
     product_name = input("Enter the name of the product you want to search: ")
     product_name = f"%{product_name}%"
     exe_statement = """
@@ -87,6 +92,7 @@ def search_product():
                   """)
 
 def low_stock_alert():
+    """Checks for products that are low on quantity in the inventory"""
     exe_statement = """
     SELECT products.product_name, products.qty, products.price, categories.category_name
     FROM products
