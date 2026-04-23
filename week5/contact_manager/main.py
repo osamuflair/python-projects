@@ -33,7 +33,6 @@ def get_contact_by_id(id: int):
             return items
     return "NOT FOUND"
 
-
 @app.put('/contacts/{id}')
 def update_contact(id:int, contact: Contact):
     """updates an existing contact"""
@@ -42,4 +41,13 @@ def update_contact(id:int, contact: Contact):
             new_contact = contact.model_dump()#convert to a dictionary
             items.update(new_contact)
             return({"message": "successful updated", "contact": contact_list})
+    return "NOT FOUND"
+
+@app.delete('/contacts/{id}')
+def delete_contact(id:int):
+    """deletes an existing contact"""
+    for items in contact_list:
+        if items["id"] == id:
+            contact_list.remove(items)
+            return({"message": "successful deleted", "contact": contact_list})
     return "NOT FOUND"
