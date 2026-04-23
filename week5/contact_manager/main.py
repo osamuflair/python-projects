@@ -57,9 +57,10 @@ def search_contact(name: str):
     """search for contacts by name"""
     result = []
     for items in contact_list:
-        if items["name"] == name:
+        if name.lower() in items["name"].lower():
             result.append(items)
     if result == []:
         return "NO CONTACT FOUND"
     else:
         return result
+    
