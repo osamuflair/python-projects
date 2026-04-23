@@ -24,3 +24,11 @@ def create_contact(contact: Contact):
     new_contact["id"] = num
     contact_list.append(new_contact)
     return({"message": "successful created", "contact": contact_list})
+
+@app.get('/contacts/{id}')
+def get_contact_by_id(id: int):
+    """gets a specific contact from the database(contact_list) by its id"""
+    for items in contact_list:
+        if items["id"] == id:
+            return items
+    return "NOT FOUND"
