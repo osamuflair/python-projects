@@ -14,3 +14,9 @@ A collection of Python projects built during my embedded engineering journey.
 
 ## Week 3 - SQL and PostgreSQL
 - Inventory Management System
+
+## Week 4 - REST API + HTTP Concepts
+- Contact API
+
+## Week 5 - FASTAPI Basics
+- Contact Manager
