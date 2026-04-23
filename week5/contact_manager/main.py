@@ -51,3 +51,15 @@ def delete_contact(id:int):
             contact_list.remove(items)
             return({"message": "successful deleted", "contact": contact_list})
     return "NOT FOUND"
+
+@app.get('/contacts/')
+def search_contact(name: str):
+    """search for contacts by name"""
+    result = []
+    for items in contact_list:
+        if items["name"] == name:
+            result.append(items)
+    if result == []:
+        return "NO CONTACT FOUND"
+    else:
+        return result
