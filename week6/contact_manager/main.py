@@ -1,6 +1,12 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from pwdlib import PasswordHash
+import jwt
+from datetime import timedelta, datetime, timezone
+
+SECRET_KEY = '1d8a683f6b2924fef1839ec2c66d59d6814e9c3325ec552953d144846c607414'
+ALGORITHM = 'HS256'
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = PasswordHash.recommended()
 DUMMY_HASH = pwd_context.hash('DUMMY PASSWORD')
@@ -45,3 +51,16 @@ def authenticate_user(username, password):
     if not verify_password(password, user.hashed_password):
         return False
     return user
+
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    """encodes the data"""
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({'exp': expire})
+    jwt_encoded = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt_encoded
+    
+    
