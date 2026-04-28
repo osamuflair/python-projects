@@ -20,3 +20,6 @@ A collection of Python projects built during my embedded engineering journey.
 
 ## Week 5 - FASTAPI Basics
 - Contact Manager
+
+## Week 6 - Authentication & Authorization
+- Authentication API
