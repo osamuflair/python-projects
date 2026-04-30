@@ -22,3 +22,9 @@ class Comment(BaseModel):
     content: str
     author: str
     post_id: int
+
+class UserRegister(BaseModel):
+    user_name: str
+    email: str
+    password: str
+    role: str
