@@ -12,11 +12,11 @@ class UserInDb(User):
 class Post(BaseModel):
     title: str
     content: str
-    author: str
 
 class PostInDb(Post):
     timestamps: datetime
     id: int
+    author: str
 
 class Comment(BaseModel):
     content: str
