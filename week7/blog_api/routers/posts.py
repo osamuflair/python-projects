@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from routers.users import get_current_user
-from models import UserInDb, Post
+from models import UserInDb, Post, PostInDb
 from typing import Annotated
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 
 router = APIRouter(
@@ -17,7 +17,8 @@ def create_post(current_user: Annotated[UserInDb, Depends(get_current_user)], po
     """a function that creates a post"""
     if current_user.role.lower() == "admin" or current_user.role.lower() == "author":
         post = post.model_dump()#converts the class to a dictionary
-        timestamp = datetime.now(timezone.utc)#stores the time the post is created
+        WAT = timezone(timedelta(hours=1))  # West Africa Time
+        timestamp = datetime.now(WAT)#stores the time the post is created
         if not posts:
             id = 1
         else:
@@ -52,4 +53,16 @@ def delete_posts(current_user: Annotated[UserInDb, Depends(get_current_user)], i
             del posts[id]#deletes post
             return({"message": "Successfully deleted post"})
         raise HTTPException(status_code = 403, detail = "UNAUTHORIZED")
+    raise HTTPException(status_code = 404, detail = "POST NOT FOUND")
+
+@router.get("/")
+def get_all_posts(current_user: Annotated[UserInDb, Depends(get_current_user)]):
+    """returns all the posts"""
+    return list(posts.values())
+    
+@router.get("/{id}")
+def get_post(current_user: Annotated[UserInDb, Depends(get_current_user)], id: int):
+    """returns a particular post"""
+    if id in posts.keys():#checks if the post exists
+        return posts[id]
     raise HTTPException(status_code = 404, detail = "POST NOT FOUND")
