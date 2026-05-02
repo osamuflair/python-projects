@@ -29,3 +29,27 @@ def create_post(current_user: Annotated[UserInDb, Depends(get_current_user)], po
         return ({"message": "sucessfully created your post"})
     else:
         raise HTTPException(status_code = 403, detail = "UNAUTHORIZED")
+    
+@router.put("/edit/{id}")
+def edit_posts(current_user: Annotated[UserInDb, Depends(get_current_user)], post: Post, id: int):
+    """a function that edits an existing post"""
+    if id in posts.keys():#checks if the post exists
+        if (current_user.role.lower() == "author" and current_user.user_name == posts[id]["author"]) or current_user.role.lower() == "admin":
+            #checks if the user is an author and if he owns the post or if the user is an admin
+            posts[id]["title"] = post.title
+            posts[id]["content"] = post.content
+            #edits the post
+            return ({"message": "Successfully edited post"})
+        raise HTTPException(status_code = 403, detail = "UNAUTHORIZED")
+    raise HTTPException(status_code = 404, detail = "POST NOT FOUND")
+
+@router.delete("/delete/{id}")
+def delete_posts(current_user: Annotated[UserInDb, Depends(get_current_user)], id: int):
+    """a function that deletes an existing post"""
+    if id in posts.keys():#checks if the post exists
+        if (current_user.role.lower() == "author" and current_user.user_name == posts[id]["author"]) or current_user.role.lower() == "admin":
+            #checks if the user is an author and if he owns the post or if the user is an admin
+            del posts[id]#deletes post
+            return({"message": "Successfully deleted post"})
+        raise HTTPException(status_code = 403, detail = "UNAUTHORIZED")
+    raise HTTPException(status_code = 404, detail = "POST NOT FOUND")
