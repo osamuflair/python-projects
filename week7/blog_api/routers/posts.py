@@ -56,9 +56,10 @@ def delete_posts(current_user: Annotated[UserInDb, Depends(get_current_user)], i
     raise HTTPException(status_code = 404, detail = "POST NOT FOUND")
 
 @router.get("/")
-def get_all_posts(current_user: Annotated[UserInDb, Depends(get_current_user)]):
+def get_all_posts(current_user: Annotated[UserInDb, Depends(get_current_user)], page: int = 1, limit: int = 10):
     """returns all the posts"""
-    return list(posts.values())
+    skip = (page - 1) * limit
+    return list(posts.values())[skip: skip + limit]#paginating the posts
     
 @router.get("/{id}")
 def get_post(current_user: Annotated[UserInDb, Depends(get_current_user)], id: int):
