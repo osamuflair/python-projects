@@ -20,8 +20,12 @@ class PostInDb(Post):
 
 class Comment(BaseModel):
     content: str
-    author: str
     post_id: int
+
+class CommentInDb(Comment):
+    timestamps: datetime
+    id: int
+    author: str
 
 class UserRegister(BaseModel):
     user_name: str
