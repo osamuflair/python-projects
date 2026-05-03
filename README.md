@@ -23,3 +23,6 @@ A collection of Python projects built during my embedded engineering journey.
 
 ## Week 6 - Authentication & Authorization
 - Authentication API
+
+## Week 7 - Advanced FastAPI Features
+- Blog API
