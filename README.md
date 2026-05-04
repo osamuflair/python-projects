@@ -26,3 +26,6 @@ A collection of Python projects built during my embedded engineering journey.
 
 ## Week 7 - Advanced FastAPI Features
 - Blog API
+
+# Week 8 -  Testing + Production Structure
+- Blog API
