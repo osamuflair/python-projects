@@ -35,12 +35,14 @@ def user_registration(registration: UserRegister):
     it hashes the user password, and gets rid of the plain password
     """
     registration = registration.model_dump()#converts the class to a dictionary
-    hashed_password = hash_password(registration["password"])
-    del registration["password"]
     user_name = registration["user_name"]
-    registration.update({"hashed_password": hashed_password})
-    users.update({user_name: registration})
-    return({"Message": "Successfully Registered"})
+    if user_name not in users:
+        hashed_password = hash_password(registration["password"])
+        del registration["password"]
+        registration.update({"hashed_password": hashed_password})
+        users.update({user_name: registration})
+        return({"Message": "Successfully Registered"})
+    raise HTTPException(status_code = 400, detail = "User already exists")
 
 def get_user(user_name):
     """
