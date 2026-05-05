@@ -1,3 +1,4 @@
+import pytest
 from main import app
 from fastapi.testclient import TestClient
 
@@ -6,6 +7,7 @@ client = TestClient(app)
 def test_user():
     """tests the users endpoints"""
     
+    #test for user registration
     response = client.post(
         "/users/register/",
         json={
@@ -18,6 +20,7 @@ def test_user():
     assert response.status_code == 200
     assert response.json() == {"Message": "Successfully Registered"}
 
+    #tests if the same username can be used multiple times for registration
     response = client.post(
         "/users/register/",
         json={
@@ -30,6 +33,7 @@ def test_user():
     assert response.status_code == 400
     assert response.json() == {"detail": "User already exists"}
 
+    #tests for correct credential log-in
     response = client.post(
             "/token",
             data={
@@ -42,6 +46,7 @@ def test_user():
     assert token is not None
     assert len(token) > 0
 
+    #tests for wrong credential log-in
     response = client.post(
             "/token",
             data={
