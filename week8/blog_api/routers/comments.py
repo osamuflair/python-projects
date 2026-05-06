@@ -4,6 +4,17 @@ from routers.users import UserInDb, get_current_user
 from routers.posts import posts
 from models import Comment
 from datetime import datetime, timedelta, timezone
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler("app.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix = "/comment",
@@ -28,7 +39,9 @@ def create_comment(current_user: Annotated[UserInDb, Depends(get_current_user)],
         
         comment.update({"author": author, "timestamps": timestamp, "id": id})
         comments.update({id:comment})
+        logger.info("User successfully commented on a post")
         return ({"message": "sucessfully commented"})
+    logger.warning("Comment failed - post does not exists")
     raise HTTPException(status_code = 404, detail = "POST NOT FOUND")
 
 @router.get("/{post_id}/")
@@ -38,4 +51,5 @@ def get_all_posts(current_user: Annotated[UserInDb, Depends(get_current_user)], 
     for items in comments.values():
         if items["post_id"] == post_id:
             com.append(items)
+    logger.info("User successfully accessed all comments")
     return list(com)

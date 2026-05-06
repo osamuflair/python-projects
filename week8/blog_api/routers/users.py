@@ -7,6 +7,17 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 import os
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler("app.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix = "/users",
@@ -44,7 +55,9 @@ def user_registration(registration: UserRegister):
         del registration["password"]
         registration.update({"hashed_password": hashed_password})
         users.update({user_name: registration})
+        logger.info("User registered successfully")
         return({"Message": "Successfully Registered"})
+    logger.warning("Registration failed - username already exists")
     raise HTTPException(status_code = 400, detail = "User already exists")
 
 def get_user(user_name):
@@ -88,12 +101,14 @@ def log_in(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     """it authenticate the user, encodes the user data and returns it as a token"""
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
+        logger.warning("Log in failed - Incorrect username or password")
         raise HTTPException(
         status_code = 401,
         detail = "Incorrect username or password"
         )
     expire_delta = timedelta(minutes = DEFAULT_EXPIRY_MINUTE)
     access_token = create_token(data = {"sub":user.user_name}, expire_delta = expire_delta)
+    logger.info("User loggged in successfully")
     return Token(access_token = access_token, token_type = "bearer")
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
@@ -106,9 +121,12 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = decoded.get("sub")
         if not username:
+            logger.warning("Token validation failed")
             raise error
+        logger.info("Token Validated successfully")
         return get_user(username)
     except jwt.PyJWTError:
+        logger.warning("Token validation failed")
         raise error
     
 @router.get("/me")

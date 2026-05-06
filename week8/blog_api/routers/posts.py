@@ -3,7 +3,17 @@ from routers.users import get_current_user
 from models import UserInDb, Post, PostInDb
 from typing import Annotated
 from datetime import datetime, timezone, timedelta
+import logging
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler("app.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix = "/posts",
@@ -27,8 +37,10 @@ def create_post(current_user: Annotated[UserInDb, Depends(get_current_user)], po
         
         post.update({"author": current_user.user_name, "timestamps": timestamp, "id": id})
         posts.update({id:post})
+        logger.info("User successfully created a post")
         return ({"message": "sucessfully created your post"})
     else:
+        logger.warning("Post creation failed - user is not authorized")
         raise HTTPException(status_code = 403, detail = "UNAUTHORIZED")
     
 @router.put("/edit/{id}")
@@ -40,8 +52,11 @@ def edit_posts(current_user: Annotated[UserInDb, Depends(get_current_user)], pos
             posts[id]["title"] = post.title
             posts[id]["content"] = post.content
             #edits the post
+            logger.info("User successfully edited a post")
             return ({"message": "Successfully edited post"})
+        logger.warning("Post edit failed - user is not authorized")
         raise HTTPException(status_code = 403, detail = "UNAUTHORIZED")
+    logger.warning("Post edit failed - post does not exist")
     raise HTTPException(status_code = 404, detail = "POST NOT FOUND")
 
 @router.delete("/delete/{id}")
@@ -51,19 +66,25 @@ def delete_posts(current_user: Annotated[UserInDb, Depends(get_current_user)], i
         if (current_user.role.lower() == "author" and current_user.user_name == posts[id]["author"]) or current_user.role.lower() == "admin":
             #checks if the user is an author and if he owns the post or if the user is an admin
             del posts[id]#deletes post
+            logger.info("User successfully deleted a post")
             return({"message": "Successfully deleted post"})
+        logger.warning("Post deletion failed - user is not authorized")
         raise HTTPException(status_code = 403, detail = "UNAUTHORIZED")
+    logger.warning("Post deletion failed - post does not exists")
     raise HTTPException(status_code = 404, detail = "POST NOT FOUND")
 
 @router.get("/")
 def get_all_posts(current_user: Annotated[UserInDb, Depends(get_current_user)], page: int = 1, limit: int = 10):
     """returns all the posts"""
     skip = (page - 1) * limit
+    logger.info("User successfully accessed all posts")
     return list(posts.values())[skip: skip + limit]#paginating the posts
     
 @router.get("/{id}")
 def get_post(current_user: Annotated[UserInDb, Depends(get_current_user)], id: int):
     """returns a particular post"""
     if id in posts.keys():#checks if the post exists
+        logger.info("User successfully accessed a post by id")
         return posts[id]
+    logger.warning("Post access failed - post does not exists")
     raise HTTPException(status_code = 404, detail = "POST NOT FOUND")
