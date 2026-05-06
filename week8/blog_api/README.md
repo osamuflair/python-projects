@@ -27,5 +27,7 @@
 - Testing
 
 ## How to run
+- Create a `.env` file with `SECRET_KEY=your_secret_key`
 - Install dependencies
-- Run pytest
+- Run `uvicorn main:app --reload` to start the server
+- Run `python -m pytest` to run tests
