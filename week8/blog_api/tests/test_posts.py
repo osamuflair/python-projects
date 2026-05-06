@@ -88,7 +88,7 @@ def test_posts(get_token, get_token2, get_token3):
         }
     )
     assert response.status_code == 403
-    assert response.json() == {"detail": "UNAUTHORIZED"}
+    assert response.json() == {"detail": "Only authors and admins can create posts"}
 
 
     #test if an author can edit his post
@@ -117,7 +117,7 @@ def test_posts(get_token, get_token2, get_token3):
         }
     )
     assert response.status_code == 403
-    assert response.json() == {"detail": "UNAUTHORIZED"}
+    assert response.json() == {"detail": "Only authors that created a post can edit it"}
 
     #test if an admin can edit his post
     response = client.put(
@@ -159,7 +159,7 @@ def test_posts(get_token, get_token2, get_token3):
         }
     )
     assert response.status_code == 403
-    assert response.json() == {"detail": "UNAUTHORIZED"}
+    assert response.json() == {"detail": "Only authors and admins can edit posts"}
 
     #test to edit a post that does not exists
     response = client.put(
@@ -193,7 +193,7 @@ def test_posts(get_token, get_token2, get_token3):
         }
     )
     assert response.status_code == 403
-    assert response.json() == {"detail": "UNAUTHORIZED"}
+    assert response.json() == {"detail": "Only authors that created a post can delete it"}
 
     #test if an admin can delete his post
     response = client.delete(
@@ -223,7 +223,7 @@ def test_posts(get_token, get_token2, get_token3):
         }
     )
     assert response.status_code == 403
-    assert response.json() == {"detail": "UNAUTHORIZED"}
+    assert response.json() == {"detail": "Only authors and admins can delete posts"}
 
     #test to delete a post that does not exists
     response = client.delete(

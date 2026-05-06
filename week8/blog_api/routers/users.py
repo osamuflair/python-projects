@@ -42,23 +42,27 @@ def hash_password(password):
     """"a function that hashes a password"""
     return passwordhash.hash(password)
 
-@router.post("/register/")
-def user_registration(registration: UserRegister):
-    """
-    a function that registers new users
-    it hashes the user password, and gets rid of the plain password
-    """
-    registration = registration.model_dump()#converts the class to a dictionary
-    user_name = registration["user_name"]
-    if user_name not in users:
-        hashed_password = hash_password(registration["password"])
-        del registration["password"]
-        registration.update({"hashed_password": hashed_password})
-        users.update({user_name: registration})
-        logger.info("User registered successfully")
-        return({"Message": "Successfully Registered"})
-    logger.warning("Registration failed - username already exists")
-    raise HTTPException(status_code = 400, detail = "User already exists")
+try:
+    @router.post("/register/")
+    def user_registration(registration: UserRegister):
+        """
+        a function that registers new users
+        it hashes the user password, and gets rid of the plain password
+        """
+        registration = registration.model_dump()#converts the class to a dictionary
+        user_name = registration["user_name"]
+        if user_name not in users:
+            hashed_password = hash_password(registration["password"])
+            del registration["password"]
+            registration.update({"hashed_password": hashed_password})
+            users.update({user_name: registration})
+            logger.info("User registered successfully")
+            return({"Message": "Successfully Registered"})
+        logger.warning("Registration failed - username already exists")
+        raise HTTPException(status_code = 400, detail = "User already exists")
+except Exception as e:
+    logger.error(f"Unexpected error: {e}")
+    raise HTTPException(status_code=500, detail="Internal server error")
 
 def get_user(user_name):
     """
@@ -96,26 +100,32 @@ def create_token(data: dict, expire_delta: timedelta | None = None):
     encoded = jwt.encode(to_encode, SECRET_KEY, algorithm = ALGORITHM)
     return encoded
 
-@router2.post("/token")
-def log_in(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
-    """it authenticate the user, encodes the user data and returns it as a token"""
-    user = authenticate_user(form_data.username, form_data.password)
-    if not user:
-        logger.warning("Log in failed - Incorrect username or password")
-        raise HTTPException(
-        status_code = 401,
-        detail = "Incorrect username or password"
-        )
-    expire_delta = timedelta(minutes = DEFAULT_EXPIRY_MINUTE)
-    access_token = create_token(data = {"sub":user.user_name}, expire_delta = expire_delta)
-    logger.info("User loggged in successfully")
-    return Token(access_token = access_token, token_type = "bearer")
+try:
+    @router2.post("/token")
+    def log_in(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
+        """it authenticate the user, encodes the user data and returns it as a token"""
+        user = authenticate_user(form_data.username, form_data.password)
+        if not user:
+            logger.warning("Log in failed - Incorrect username or password")
+            raise HTTPException(
+            status_code = 401,
+            detail = "Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"}
+            )
+        expire_delta = timedelta(minutes = DEFAULT_EXPIRY_MINUTE)
+        access_token = create_token(data = {"sub":user.user_name}, expire_delta = expire_delta)
+        logger.info("User loggged in successfully")
+        return Token(access_token = access_token, token_type = "bearer")
+except Exception as e:
+    logger.error(f"Unexpected error: {e}")
+    raise HTTPException(status_code=500, detail="Internal server error")
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     """a function that decodes tokens, and validates the decoded content"""
     error = HTTPException(
         status_code = 401,
-        detail = "Could not validate credentials"
+        detail = "Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"}
     )
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -128,12 +138,16 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     except jwt.PyJWTError:
         logger.warning("Token validation failed")
         raise error
-    
-@router.get("/me")
-def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
-    """
-    a function that returns the current user
-    it converts the class to a dictionary using .model_dump()
-    it removes the hashed password by typecasting using model_validate
-    """
-    return User.model_validate(current_user.model_dump())
+
+try:
+    @router.get("/me")
+    def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
+        """
+        a function that returns the current user
+        it converts the class to a dictionary using .model_dump()
+        it removes the hashed password by typecasting using model_validate
+        """
+        return User.model_validate(current_user.model_dump())
+except Exception as e:
+    logger.error(f"Unexpected error: {e}")
+    raise HTTPException(status_code=500, detail="Internal server error")
