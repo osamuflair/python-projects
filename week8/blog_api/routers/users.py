@@ -5,6 +5,8 @@ from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import jwt
 from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
+import os
 
 router = APIRouter(
     prefix = "/users",
@@ -20,7 +22,8 @@ users = {}#uses a dictionary as the database
 passwordhash = PasswordHash.recommended()
 DUMMYHASH = passwordhash.hash("DUMMYPASSWORD")#hashed a dummy password
 
-SECRET_KEY = '3aafc92f23d1774d08f727e242d5504c1f44753c08278cd0f78b9ba2a42399eb'
+load_dotenv()
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = 'HS256'
 DEFAULT_EXPIRY_MINUTE = 30
 
