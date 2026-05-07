@@ -10,6 +10,7 @@
 - pwdlib
 - pytest
 - httpx
+- python-dotenv
 
 ## Features
 - User management
