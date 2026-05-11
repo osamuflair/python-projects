@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pwdlib[argon2]
+PyJWT
+python-multipart
+python-dotenv
+pytest
+httpx
