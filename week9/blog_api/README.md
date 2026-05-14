@@ -11,6 +11,7 @@
 - pytest
 - httpx
 - python-dotenv
+- Docker
 
 ## Features
 - User management
@@ -26,9 +27,13 @@
 - Authentication
     - JWT tokens protect the endpoints
 - Testing
+- Containerization
+    - App is containerized with Docker
+    - Image available on Docker Hub
 
 ## How to run
 - Create a `.env` file with `SECRET_KEY=your_secret_key`
 - Install dependencies
 - Run `uvicorn main:app --reload` to start the server
+- Or run with Docker: `docker run -p 8000:8000 -e SECRET_KEY=your_secret_key osamuflair/blog-api`
 - Run `python -m pytest` to run tests
