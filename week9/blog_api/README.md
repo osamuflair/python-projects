@@ -34,6 +34,7 @@
 ## How to run
 - Create a `.env` file with `SECRET_KEY=your_secret_key`
 - Install dependencies
-- Run `uvicorn main:app --reload` to start the server
+- Run `python -m pytest` to run tests first
+- Run `uvicorn main:app --reload` to start the server locally
 - Or run with Docker: `docker run -p 8000:8000 -e SECRET_KEY=your_secret_key osamuflair/blog-api`
-- Run `python -m pytest` to run tests
+- Or run with Docker Compose: `docker-compose up`
