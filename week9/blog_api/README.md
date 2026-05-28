@@ -43,3 +43,6 @@
 - Run `uvicorn main:app --reload` to start the server locally
 - Or run with Docker: `docker run -p 8000:8000 -e SECRET_KEY=your_secret_key osamuflair/blog-api`
 - Or run with Docker Compose: `docker-compose up`
+
+## Live Demo
+- API: https://blog-api-0gae.onrender.com/docs
